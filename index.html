@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>A Godly Investor's True Quest</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --card-bg: #000000;
+      --card-border: #1c1c1e;
+      --p1: #FFFFFF;
+      --p2: #AAAAAA;
+      --dot: #666666;
+      --slash: #FFFFFF;
+      --divider: #333333;
+      --tqqq: #e8714f;
+      --spym: #b07cc0;
+      --sgov: #5bb8e8;
+      --upperBand: #e070c0;
+      --lowerBand: #afd485;
+      --cp: #80dfff;
+      --alert: #ff4d4d;
+      --extremeFear: #e8714f;
+      --fear: #f0a0a0;
+      --neutral: #AAAAAA;
+      --greed: #5bb8e8;
+      --extremeGreed: #b07cc0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--p1);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Roboto", sans-serif;
+      padding: calc(8px + env(safe-area-inset-top)) 10px calc(8px + env(safe-area-inset-bottom)) 10px;
+      width: 100%;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    .widget-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 12px 14px;
+      border: 1px solid var(--card-border);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 3px;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--p1);
+      letter-spacing: -0.3px;
+    }
+
+    .version {
+      font-size: 8px;
+      color: var(--p2);
+      font-weight: 400;
+    }
+
+    .updated-time {
+      font-size: 10px;
+      color: var(--p1);
+      margin-bottom: 6px;
+      font-weight: 400;
+    }
+
+    .content-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .chart-box {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .info-box {
+      flex: 1.15;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .sig-row {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.25;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .token-tqqq { color: var(--tqqq); }
+    .token-spym { color: var(--spym); }
+    .token-sgov { color: var(--sgov); }
+    .token-dot  { color: var(--dot); margin: 0 1px; }
+    .token-action { color: var(--p1); margin-left: 4px; }
+    .token-alert  { color: var(--alert); }
+
+    .status-text {
+      font-size: 10px;
+      margin-top: 2px;
+      font-weight: 400;
+    }
+
+    .dd-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--p1);
+      margin-top: 3px;
+    }
+
+    .fgi-header {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      text-decoration: none;
+      color: var(--p1);
+      display: inline-block;
+      letter-spacing: -0.3px;
+    }
+
+    .fgi-info-box {
+      flex: 1.15;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .fgi-rating {
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .fgi-stats {
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .fgi-slash {
+      color: var(--slash);
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .loading-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 60vh;
+      color: var(--p2);
+      font-size: 13px;
+    }
+
+    .refresh-btn {
+      width: 100%;
+      background: #141416;
+      border: 1px solid var(--divider);
+      color: var(--p2);
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 4px;
+      cursor: pointer;
+    }
+    .refresh-btn:active { background: #222; }
+  </style>
+</head>
+<body>
+
+  <div id="loader" class="loading-wrap">동기화된 지표를 불러오는 중...</div>
+
+  <div id="main-view" class="widget-container" style="display: none;">
+    <!-- Large 위젯: 200슨피단 (SPX) -->
+    <div class="card" id="card-spx">
+      <div class="card-header">
+        <a class="title" href="https://www.youtube.com/@%EC%95%84%EA%B8%B0%ED%8B%B0%ED%81%90" target="_blank">아기티큐 200슨피단 (SPX)</a>
+        <div class="version" id="spx-ver">v3.0-γ (26.08.12)</div>
+      </div>
+      <div class="updated-time" id="spx-updated">-</div>
+      
+      <div class="content-row">
+        <div class="chart-box">
+          <canvas id="spxChart"></canvas>
+        </div>
+        <div class="info-box" id="spx-info"></div>
+      </div>
+    </div>
+
+    <!-- Medium 위젯: 200큐큐단 (QQQ) -->
+    <div class="card" id="card-qqq">
+      <div class="card-header">
+        <a class="title" href="https://www.youtube.com/@%EC%95%84%EA%B8%B0%ED%8B%B0%ED%81%90" target="_blank">아기티큐 200큐큐단 (QQQ)</a>
+        <div class="version" id="qqq-ver">v3.0-γ (26.08.12)</div>
+      </div>
+      <div class="updated-time" id="qqq-updated">-</div>
+      
+      <div class="content-row">
+        <div class="chart-box">
+          <canvas id="qqqChart"></canvas>
+        </div>
+        <div class="info-box" id="qqq-info"></div>
+      </div>
+    </div>
+
+    <!-- 공포와 탐욕 지수 (CNN FGI) -->
+    <div class="card" id="card-fgi">
+      <a class="fgi-header" href="https://edition.cnn.com/markets/fear-and-greed" target="_blank">공포와 탐욕 지수 (CNN FGI)</a>
+      <div class="content-row">
+        <div class="chart-box">
+          <canvas id="fgiHistoryChart"></canvas>
+        </div>
+        <div class="fgi-info-box">
+          <canvas id="fgiGauge"></canvas>
+          <div class="fgi-rating" id="fgi-rating-text">-</div>
+          <div class="fgi-stats" id="fgi-stats-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="refresh-btn" id="btn-refresh" onclick="loadDashboard()">새로고침</button>
+  </div>
+
+  <script>
+    const WORKER_URL = "https://spx-indicator-api.본인아이디입력.workers.dev";
+
+    const C = {
+      bg: "#000000",
+      p1: "#FFFFFF",
+      p2: "#AAAAAA",
+      dot: "#666666",
+      slash: "#FFFFFF",
+      divider: "#333333",
+      tqqq: "#e8714f",
+      spym: "#b07cc0",
+      sgov: "#5bb8e8",
+      upperBand: "#e070c0",
+      lowerBand: "#afd485",
+      cp: "#80dfff",
+      alert: "#ff4d4d",
+      extremeFear: "#e8714f",
+      fear: "#f0a0a0",
+      neutral: "#AAAAAA",
+      greed: "#5bb8e8",
+      extremeGreed: "#b07cc0"
+    };
+
+    function getHDContext(canvasId, logicalW, logicalH) {
+      const cvs = document.getElementById(canvasId);
+      if (!cvs) return null;
+      const dpr = window.devicePixelRatio || 1;
+      cvs.width = logicalW * dpr;
+      cvs.height = logicalH * dpr;
+      cvs.style.aspectRatio = `${logicalW} / ${logicalH}`;
+      const ctx = cvs.getContext("2d");
+      ctx.resetTransform?.();
+      ctx.scale(dpr, dpr);
+      return { ctx, W: logicalW, H: logicalH };
+    }
+
+    function etfColorClass(token) {
+      if (token.includes("TQQQ")) return "token-tqqq";
+      if (token.includes("SPYM")) return "token-spym";
+      if (token.includes("SGOV")) return "token-sgov";
+      return "";
+    }
+
+    function fgiColor(val) {
+      if (val >= 75) return C.extremeGreed;
+      if (val >= 55) return C.greed;
+      if (val >= 45) return C.neutral;
+      if (val >= 25) return C.fear;
+      return C.extremeFear;
+    }
+
+    function translateRating(rating) {
+      switch ((rating || "").toLowerCase()) {
+        case "extreme fear":  return "극공포 (Extreme Fear)";
+        case "fear":          return "공포 (Fear)";
+        case "neutral":       return "중립 (Neutral)";
+        case "greed":         return "탐욕 (Greed)";
+        case "extreme greed": return "극탐욕 (Extreme Greed)";
+        default:              return rating;
+      }
+    }
+
+    function drawBandChart(canvasId, closes, sma, upB, dnB) {
+      const cv = getHDContext(canvasId, 500, 300);
+      if (!cv) return;
+      const { ctx } = cv;
+
+      const SIZE = 90;
+      const pSet = closes.slice(-SIZE);
+      const sSet = sma.slice(-SIZE);
+      const uSet = sSet.map(v => v === null || isNaN(v) ? NaN : v * (1 + upB));
+      const lSet = sSet.map(v => v === null || isNaN(v) ? NaN : v * (1 - dnB));
+
+      const all = pSet.concat(uSet, lSet).filter(v => !isNaN(v));
+      const min = Math.min(...all);
+      const max = Math.max(...all);
+      const range = (max - min) === 0 ? 1 : (max - min);
+
+      const trans = (v, i) => ({
+        x: 15 + (i / (SIZE - 1)) * 470,
+        y: 285 - ((v - min) / range) * 270,
+      });
+
+      const plot = (dat, col, wid) => {
+        ctx.beginPath();
+        let started = false;
+        dat.forEach(pt => {
+          if (!isNaN(pt.y)) {
+            if (!started) { ctx.moveTo(pt.x, pt.y); started = true; }
+            else ctx.lineTo(pt.x, pt.y);
+          }
+        });
+        ctx.strokeStyle = col;
+        ctx.lineWidth = wid;
+        ctx.stroke();
+      };
+
+      plot(uSet.map(trans), C.upperBand, 3);
+      plot(lSet.map(trans), C.lowerBand, 3);
+      plot(pSet.map(trans), C.cp, 5);
+    }
+
+    function drawFGIChart(canvasId, data) {
+      const cv = getHDContext(canvasId, 480, 300);
+      if (!cv) return;
+      const { ctx, W, H } = cv;
+
+      const PAD_L = 8, PAD_R = 8, PAD_T = 12, PAD_B = 12;
+      const usableW = W - PAD_L - PAD_R;
+      const usableH = H - PAD_T - PAD_B;
+      const toY = (val) => PAD_T + (1 - val / 100) * usableH;
+      const toX = (i) => PAD_L + (i / (data.length - 1)) * usableW;
+
+      [25, 50, 75].forEach(level => {
+        ctx.beginPath();
+        ctx.moveTo(PAD_L, toY(level));
+        ctx.lineTo(W - PAD_R, toY(level));
+        ctx.strokeStyle = "rgba(170, 170, 170, 0.2)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      });
+
+      ctx.beginPath();
+      data.forEach((d, i) => {
+        const x = toX(i), y = toY(parseFloat(d.y));
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      data.forEach((d, i) => {
+        const x = toX(i), y = toY(parseFloat(d.y));
+        ctx.fillStyle = fgiColor(parseFloat(d.y));
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    function drawGauge(canvasId, val) {
+      const cv = getHDContext(canvasId, 320, 180);
+      if (!cv) return;
+      const { ctx, W, H } = cv;
+
+      const cx = W / 2, cy = H - 20, radius = 120, arcThick = 10;
+
+      for (let i = 0; i < 120; i++) {
+        const t = i / 119;
+        const angle = Math.PI + t * Math.PI;
+        const x = cx + Math.cos(angle) * radius;
+        const y = cy + Math.sin(angle) * radius;
+        ctx.fillStyle = fgiColor(t * 100);
+        ctx.beginPath();
+        ctx.arc(x, y, arcThick / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const needleAngle = Math.PI + (val / 100) * Math.PI;
+      const needleLen = radius - 8;
+      for (let i = 0; i < 35; i++) {
+        const t = i / 34;
+        const nx = cx + Math.cos(needleAngle) * needleLen * t;
+        const ny = cy + Math.sin(needleAngle) * needleLen * t;
+        const thick = 12 * (1 - t);
+        ctx.fillStyle = C.p1;
+        ctx.beginPath();
+        ctx.arc(nx, ny, thick / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = C.p1;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      const labelDist = radius + 22;
+      const lx = cx + Math.cos(needleAngle) * labelDist;
+      const ly = cy + Math.sin(needleAngle) * labelDist;
+      ctx.fillStyle = C.p1;
+      ctx.font = "bold 22px -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(val.toFixed(0), lx, ly);
+    }
+
+    function renderTokens(containerId, sig, fontSize = 14) {
+      const el = document.getElementById(containerId);
+      if (!el || !sig) return;
+
+      let html = "";
+      sig.lines.forEach(lineWords => {
+        let tokensHtml = "";
+        lineWords.forEach(token => {
+          if (sig.isAlert) {
+            tokensHtml += `<span class="token-alert">${token}</span> `;
+          } else if (token.includes("·")) {
+            const parts = token.split("·");
+            parts.forEach((part, i) => {
+              tokensHtml += `<span class="${etfColorClass(part)}">${part}</span>`;
+              if (i < parts.length - 1) tokensHtml += `<span class="token-dot">·</span>`;
+            });
+            tokensHtml += ` `;
+          } else {
+            tokensHtml += `<span class="${etfColorClass(token)}">${token}</span> `;
+          }
+        });
+
+        html += `<div class="sig-row" style="font-size: ${fontSize}px">${tokensHtml}</div>`;
+      });
+
+      html += `
+        <div class="status-text" style="color: ${sig.isAlert ? C.alert : C.p2}">${sig.n}</div>
+        <div class="dd-text">${sig.ddStr}</div>
+      `;
+      el.innerHTML = html;
+    }
+
+    function applyViewFilter() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const view = urlParams.get('v');
+
+      const cardSpx = document.getElementById('card-spx');
+      const cardQqq = document.getElementById('card-qqq');
+      const cardFgi = document.getElementById('card-fgi');
+      const btnRefresh = document.getElementById('btn-refresh');
+
+      if (view === 'spx') {
+        cardQqq.style.display = 'none';
+        cardFgi.style.display = 'none';
+        btnRefresh.style.display = 'none';
+      } else if (view === 'qqq') {
+        cardSpx.style.display = 'none';
+        cardFgi.style.display = 'none';
+        btnRefresh.style.display = 'none';
+      } else if (view === 'fgi') {
+        cardSpx.style.display = 'none';
+        cardQqq.style.display = 'none';
+        btnRefresh.style.display = 'none';
+      }
+    }
+
+    async function loadDashboard() {
+      const loader = document.getElementById("loader");
+      const mainView = document.getElementById("main-view");
+      loader.style.display = "flex";
+      mainView.style.display = "none";
+
+      try {
+        const res = await fetch(WORKER_URL);
+        if (!res.ok) throw new Error("지표 데이터를 가져올 수 없습니다.");
+        const data = await res.json();
+
+        // 한국 표준시(KST) 기준 포맷 (yy.MM.dd. HH:mm 기준)
+        const formatKSTTime = (ts) => {
+          const d = new Date(ts * 1000);
+          const kst = new Date(d.toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+          const yy = String(kst.getFullYear()).slice(-2);
+          const mm = String(kst.getMonth() + 1).padStart(2, '0');
+          const dd = String(kst.getDate()).padStart(2, '0');
+          const hh = String(kst.getHours()).padStart(2, '0');
+          const min = String(kst.getMinutes()).padStart(2, '0');
+          return `${yy}.${mm}.${dd}. ${hh}:${min} 기준`;
+        };
+
+        if (data.version) {
+          document.getElementById("spx-ver").innerText = data.version;
+          document.getElementById("qqq-ver").innerText = data.version;
+        }
+
+        document.getElementById("spx-updated").innerText = formatKSTTime(data.spxTime);
+        document.getElementById("qqq-updated").innerText = formatKSTTime(data.qqqTime);
+
+        drawBandChart("spxChart", data.spx.closes, data.spx.sma, data.spx.upB, data.spx.dnB);
+        renderTokens("spx-info", data.spx.sig, 14);
+
+        drawBandChart("qqqChart", data.qqq.closes, data.qqq.sma, data.qqq.upB, data.qqq.dnB);
+        renderTokens("qqq-info", data.qqq.sig, 15);
+
+        drawFGIChart("fgiHistoryChart", data.fgi.data);
+        drawGauge("fgiGauge", data.fgi.latestVal);
+
+        const ratingEl = document.getElementById("fgi-rating-text");
+        ratingEl.innerText = translateRating(data.fgi.latestRating);
+        ratingEl.style.color = fgiColor(data.fgi.latestVal);
+
+        const statsEl = document.getElementById("fgi-stats-text");
+        statsEl.innerHTML = `
+          <span style="color: ${fgiColor(data.fgi.latestVal)}">현재 ${data.fgi.latestVal.toFixed(0)}</span>
+          <span class="fgi-slash">/</span>
+          <span style="color: ${fgiColor(data.fgi.avg30)}">30일 평균 ${data.fgi.avg30.toFixed(0)}</span>
+        `;
+
+        applyViewFilter();
+
+        loader.style.display = "none";
+        mainView.style.display = "flex";
+      } catch (err) {
+        loader.innerText = "오류: " + err.message;
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
